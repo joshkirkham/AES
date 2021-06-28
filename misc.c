@@ -1,20 +1,14 @@
 #include "misc.h"
+#include "aes.h"
 
 #include <stdint.h>
 #include <stdio.h>
-#include "aes.h"
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 
 
 
-/*
- * Pre:
- * 	bytes: bytes to be converted
- * 	hex: where to write hex to
- * 	bytesLen: lenght of byte array
- */
 void bytesToHex(uint8_t* bytes, int bytesLen,  char* hex) {
 	for (int i = 0; i < bytesLen; ++i) {
 		//printf("%d ", bytes[i]);

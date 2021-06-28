@@ -1,8 +1,12 @@
-#include <stdio.h>
+/** The thing which actually implements the program. Documentation can be 
+ * found in README.txt */
+
 #include "aes.h"
-#include "misc.h"
-#include <stdint.h>
 #include "keyexpand.h"
+#include "misc.h"
+
+#include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -19,6 +23,7 @@
  */
 int main(int argc, char** argv) {
 
+	// Parse the arg vector into a set of variables
 	bool DECRYPT = false;
 	bool CBC = false;
 	char* hexkey = NULL;
@@ -52,8 +57,8 @@ int main(int argc, char** argv) {
 	toUpperCase(text);
 
 
-	//printf("HEXKEY  %s\n", hexkey);
 
+	// Determine the number of rounds needed
 	int keylen = strlen(hexkey);
 
 	int nRounds;
@@ -72,8 +77,8 @@ int main(int argc, char** argv) {
 
 
 	// Convert IV to bytes
-	uint8_t* chain; //Holds the chain of IV ^ text ^ text ^ ...
-	uint8_t* IV;    //Holds a separate copy of IV for encryption
+	uint8_t* IV; //Holds the chain of IV ^ text ^ text ^ ...
+	uint8_t* chain;    //Holds a separate copy of IV for use in encryption
 	if (CBC) {
 		chain = calloc(16, sizeof(int8_t));
 		IV = calloc(16, sizeof(int8_t));
@@ -91,15 +96,6 @@ int main(int argc, char** argv) {
 	}
 
 
-	/*
-	// print the expanded key
-	char* expandedHex = calloc(2 * BLOCK_SZ * (nRounds+ 1) + 5, sizeof(char));
-	bytesToHex(expanded, (nRounds + 1) * BLOCK_SZ, expandedHex);
-	printf(" expanded %s\n\n", expandedHex);
-	free(expandedHex);
-	*/
-	
-
 	int inputlen = strlen(text);
 	State s;
 	int i = 0;
@@ -109,17 +105,14 @@ int main(int argc, char** argv) {
 	uint8_t* bytes = calloc(16, sizeof(int8_t));
 
 
+	//Perform the cipher for each block of input
 	while (i < inputlen) {
 		strncpy(hex, text + i, 32);
-		//printf("HEX %s\n", hex);
 		i  += 32;
 		hexToBytes(hex, 32, bytes);
-
-
-
-
-
 		writeState(s, bytes);
+
+
 		switch (DECRYPT) {
 			case true: 
 				if (CBC) { 
@@ -127,43 +120,25 @@ int main(int argc, char** argv) {
 					readState(s, chain);
 				}
 				InvCipher(s, expanded, keylen); 
-				if (CBC) {
-					AddRoundKey(s, IV);
-					/*
-					printf("CBC vector: ");
-					bytesToHex(IV, 16, hexIV);
-					printf("%s\n", hexIV);
-					*/
-					//printf("APPLY CBC: ");
-					//printState(s);
-				}
+				if (CBC) { AddRoundKey(s, IV); }
 				break;
 
 			case false: 
-				if (CBC) { AddRoundKey(s, IV); 
-					/*
-					printf("CBC vector: ");
-					bytesToHex(IV, 16, hexIV);
-					printf("%s\n", hexIV);
-					*/
-					}
-
+				if (CBC) { AddRoundKey(s, IV); }
 				Cipher(s, expanded, keylen); 
 				if (CBC) { readState(s, IV); }
 				break;
 		}
 		readState(s, bytes);
-
 		bytesToHex(bytes, 16, hex);
 		printf("%s\n", hex);
 	}
 
 	
+	// cleanup
 	if (CBC) { free(chain); free(IV); }
-
 	free(hex);
 	free(bytes);
-
 	free(key);
 	free(expanded);
 

@@ -20,43 +20,23 @@ void Cipher(State s, uint8_t* key, uint8_t keylen) {
 
 	char* debugBuffer = calloc(33, sizeof(char));
 
-	//printState(s);
 	AddRoundKey(s, key);
-	//printState(s);
 
 	int round;
 	for (round = 1; round < nRounds; ++round) {
 		SubBytes(s);
-		//printState(s);
 		ShiftRows(s);
-		//printState(s);
-
-		//printf("mixcolumns ");
 		MixColumns(s);
-		//printState(s);
-
-
-		/*
-		char* hex = calloc(33, sizeof(char));
-		bytesToHex(key + (round * BLOCK_SZ), 16, hex);
-		printf("Round Key %d: %s\n", round, hex);
-		free(hex);
-		*/
-
-
 		AddRoundKey(s, key + (round * BLOCK_SZ));
-	//	printState(s);
 	}
 
 	SubBytes(s);
-	//printState(s);
 	ShiftRows(s);
-	//printState(s);
 	AddRoundKey(s, key + (round * BLOCK_SZ));
-	//printState(s);
 
 	free(debugBuffer);
 }
+
 
 void InvCipher(State s, uint8_t* key, uint8_t keylen) {
 	uint8_t nRounds;
@@ -69,49 +49,20 @@ void InvCipher(State s, uint8_t* key, uint8_t keylen) {
 
 	char* debugBuffer = calloc(33, sizeof(char));
 
-	//printState(s);
 	AddRoundKey(s, key + BLOCK_SZ * (nRounds));
-	//printState(s);
 
 	int round;
 	for (round = nRounds - 1; round > 0; --round) {
 		InvShiftRows(s);
-		//printf("InvShiftRows ");printState(s);
-
 		InvSubBytes(s);
-		//printf("InvSubBytes ");printState(s);
-
-
-		
-		char* hex = calloc(33, sizeof(char));
-		bytesToHex(key + (round * BLOCK_SZ), 16, hex);
-		//printf("Round Key %d: %s\n", round, hex);
-		free(hex);
-		
-
-
-		//printf("InvAddRoundKey ");
 		AddRoundKey(s, key + (round * BLOCK_SZ));
-		//printState(s);
-
-
-		//printf("InvMixColumns ");
 		InvMixColumns(s);
-		//printState(s);
 
 		
 	}
 	InvShiftRows(s);
-	//printState(s);
-
-
 	InvSubBytes(s);
-	//printState(s);
-
 	InvAddRoundKey(s, key);
-	//printf("=========");
-	//printState(s);
-
 	free(debugBuffer);
 }
 
@@ -119,7 +70,6 @@ void InvCipher(State s, uint8_t* key, uint8_t keylen) {
 void SubBytes(State s) {
 	for (int i = 0; i < 4; ++i) {
 		for (int j = 0; j < 4; ++j) {
-			//printf("%d -> %d\n", s[i][j], sbox[s[i][j]]);
 			s[i][j] = sbox[s[i][j]];
 		}
 	}
@@ -128,7 +78,6 @@ void SubBytes(State s) {
 void InvSubBytes(State s) {
 	for (int i = 0; i < 4; ++i) {
 		for (int j = 0; j < 4; ++j) {
-			//printf("%x -> %x\n", s[i][j], sbox[s[i][j]]);
 			s[i][j] = invsbox[s[i][j]];
 		}
 	}
@@ -197,10 +146,6 @@ void InvMixColumns(State s){
 
 
 void AddRoundKey(State s, uint8_t* rk) {
-/*	char* hex = calloc(33, sizeof(char));
-	bytesToHex(rk, 16, hex);
-	printf("Round Key: %s\n", hex);
-	free(hex);*/
 	for (int col = 0; col < 4; ++col) {
 		for (int row = 0; row < 4; ++row) {
 			s[row][col] ^= rk[row + 4*col];

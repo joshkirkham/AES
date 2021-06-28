@@ -1,3 +1,4 @@
+
 #include "galois.h"
 
 uint8_t mul2(uint8_t a) {
