@@ -38,22 +38,6 @@ COMPILATION
 
 			gcc -o aes *.c
 
-FOR PROF. HART
-		Regarding ECB mode: When I was looking up how to do ECB mode, I read
-		that it needed an initialization vector (IV), but this wasn't on the
-		class slides, and wasn't implemented in the online test tool. For the
-		test runs we were required to submit, I used an IV of all 0s, which
-		is equivalent to having none (like in the test website).
-
-		Most of the documentation for functions behavior is in the relevant .h
-		file. Comments in code explain implentation, not functionality. 
-
-		The various non-code deliverables can be found in the "deliverables" 
-		directory. The analysis of secrecy can be found in the file 
-		"secrecy_analysis.txt"
-
-		Thank you very much for giving me an extension on this project.
-
 AUTHOR
 		Joshua Kirkham (joshk21)
 	
